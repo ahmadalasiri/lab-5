@@ -1,0 +1,10 @@
+version: "1"
+services:
+  - type: web
+    name: lab-5
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    plan: free
+    repo: https://github.com/ahmadalasiri/lab-5.git
