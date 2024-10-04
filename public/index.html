@@ -31,7 +31,8 @@
     <script>
         // Function to populate the albums table
         function loadAlbums() {
-            fetch('http://localhost:4001/api/albums')
+            // fetch('http://localhost:4001/api/albums')
+            fetch('https://lab-5-o4a4.onrender.com/api/albums')
                 .then(response => response.json())
                 .then(data => {
                     const table = document.getElementById('albums-table');
