@@ -29,10 +29,6 @@ router.post("/albums", async (req, res) => {
   const { title, artist, year } = req.body;
 
   try {
-    const albumExists = await Album.findOne({ title });
-    if (albumExists)
-      return res.status(409).json({ message: "Album already exists" });
-
     const album = new Album({ title, artist, year });
     const newAlbum = await album.save();
     res.status(201).json(newAlbum);
@@ -63,7 +59,7 @@ router.delete("/albums/:id", async (req, res) => {
     const album = await Album.findById(req.params.id);
     if (!album) return res.status(404).json({ message: "Album not found" });
 
-    await album.remove();
+    await Album.findByIdAndDelete(req.params.id);
     res.json({ message: "Album deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
