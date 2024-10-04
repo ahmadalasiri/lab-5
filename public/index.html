@@ -9,30 +9,133 @@
 
 <body>
     <h1>Music Albums</h1>
+
+    <!-- Form to create a new album -->
+    <form id="new-album-form">
+        <input type="text" id="new-title" placeholder="Title" required />
+        <input type="text" id="new-artist" placeholder="Artist" required />
+        <input type="number" id="new-year" placeholder="Year" required />
+        <button type="submit">Add New Album</button>
+    </form>
+
     <table id="albums-table" border="1">
         <tr>
             <th>ID</th>
             <th>Title</th>
             <th>Artist</th>
             <th>Year</th>
+            <th>Actions</th>
         </tr>
     </table>
 
     <script>
-        // fetch('http://localhost:4001/api/albums')
-        fetch('https://lab-5-o4a4.onrender.com/api/albums')
-            .then(response => response.json())
-            .then(data => {
-                const table = document.getElementById('albums-table');
-                data.forEach(album => {
-                    const row = table.insertRow();
-                    row.insertCell(0).innerText = album._id;  // Assuming album._id is the MongoDB id
-                    row.insertCell(1).innerText = album.title;
-                    row.insertCell(2).innerText = album.artist;
-                    row.insertCell(3).innerText = album.year;
-                });
+        // Function to populate the albums table
+        function loadAlbums() {
+            fetch('http://localhost:4001/api/albums')
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('albums-table');
+                    table.innerHTML = `
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Artist</th>
+                            <th>Year</th>
+                            <th>Actions</th>
+                        </tr>
+                    `;
+                    data.forEach(album => {
+                        const row = table.insertRow();
+                        row.insertCell(0).innerText = album._id;
+                        row.insertCell(1).innerHTML = `<input type="text" value="${album.title}" class="edit-title" />`;
+                        row.insertCell(2).innerHTML = `<input type="text" value="${album.artist}" class="edit-artist" />`;
+                        row.insertCell(3).innerHTML = `<input type="number" value="${album.year}" class="edit-year" />`;
+                        const actionsCell = row.insertCell(4);
+
+                        // Update button
+                        const updateButton = document.createElement('button');
+                        updateButton.innerText = 'Update';
+                        updateButton.onclick = () => updateAlbum(album._id, row);
+                        actionsCell.appendChild(updateButton);
+
+                        // Delete button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.innerText = 'Delete';
+                        deleteButton.onclick = () => deleteAlbum(album._id);
+                        actionsCell.appendChild(deleteButton);
+
+                        // Details button (optional)
+                        const detailsButton = document.createElement('button');
+                        detailsButton.innerText = 'Details';
+                        detailsButton.onclick = () => alert(JSON.stringify(album, null, 2));
+                        actionsCell.appendChild(detailsButton);
+                    });
+                })
+                .catch(err => console.error('Error fetching albums:', err));
+        }
+
+        // Update album function
+        function updateAlbum(id, row) {
+            const title = row.querySelector('.edit-title').value;
+            const artist = row.querySelector('.edit-artist').value;
+            const year = row.querySelector('.edit-year').value;
+
+            fetch(`http://localhost:4001/api/albums/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, artist, year })
             })
-            .catch(err => console.error('Error fetching albums:', err));
+                .then(response => response.json())
+                .then(data => {
+                    alert('Album updated successfully!');
+                    loadAlbums(); // Refresh the table
+                })
+                .catch(err => console.error('Error updating album:', err));
+        }
+
+        // Delete album function
+        function deleteAlbum(id) {
+            if (confirm('Are you sure you want to delete this album?')) {
+                fetch(`http://localhost:4001/api/albums/${id}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Album deleted successfully!');
+                        loadAlbums(); // Refresh the table
+                    })
+                    .catch(err => console.error('Error deleting album:', err));
+            }
+        }
+
+        // Create a new album
+        const newAlbumForm = document.getElementById('new-album-form');
+        newAlbumForm.onsubmit = function (e) {
+            e.preventDefault(); // Prevent form from submitting normally
+            const title = document.getElementById('new-title').value;
+            const artist = document.getElementById('new-artist').value;
+            const year = document.getElementById('new-year').value;
+
+            fetch('http://localhost:4001/api/albums', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, artist, year })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('New album added successfully!');
+                    newAlbumForm.reset(); // Clear the form fields
+                    loadAlbums(); // Refresh the table
+                })
+                .catch(err => console.error('Error adding album:', err));
+        };
+
+        // Load albums on page load
+        loadAlbums();
     </script>
 </body>
 

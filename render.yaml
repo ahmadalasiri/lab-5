@@ -8,3 +8,6 @@ services:
     autoDeploy: true
     plan: free
     repo: https://github.com/ahmadalasiri/lab-5.git
+    envVars:
+      - key: NODE_ENV
+        value: production
