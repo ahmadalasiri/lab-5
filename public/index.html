@@ -31,8 +31,8 @@
     <script>
         // Function to populate the albums table
         function loadAlbums() {
-            // fetch('http://localhost:4001/api/albums')
             fetch('https://lab-5-o4a4.onrender.com/api/albums')
+                // fetch('https://lab-5-o4a4.onrender.com/api/albums')
                 .then(response => response.json())
                 .then(data => {
                     const table = document.getElementById('albums-table');
@@ -81,7 +81,7 @@
             const artist = row.querySelector('.edit-artist').value;
             const year = row.querySelector('.edit-year').value;
 
-            fetch(`http://localhost:4001/api/albums/${id}`, {
+            fetch(`https://lab-5-o4a4.onrender.com/api/albums/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -99,13 +99,13 @@
         // Delete album function
         function deleteAlbum(id) {
             if (confirm('Are you sure you want to delete this album?')) {
-                fetch(`http://localhost:4001/api/albums/${id}`, {
+                fetch(`https://lab-5-o4a4.onrender.com/api/albums/${id}`, {
                     method: 'DELETE'
                 })
                     .then(response => response.json())
                     .then(data => {
                         alert('Album deleted successfully!');
-                        loadAlbums(); // Refresh the table
+                        // loadAlbums(); // Refresh the table
                     })
                     .catch(err => console.error('Error deleting album:', err));
             }
@@ -119,7 +119,7 @@
             const artist = document.getElementById('new-artist').value;
             const year = document.getElementById('new-year').value;
 
-            fetch('http://localhost:4001/api/albums', {
+            fetch('https://lab-5-o4a4.onrender.com/api/albums', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
