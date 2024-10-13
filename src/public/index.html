@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <h1>Music Albums</h1>
+
+    <form id="new-album-form">
+        <input type="text" id="new-title" placeholder="Title" required />
+        <input type="text" id="new-artist" placeholder="Artist" required />
+        <input type="number" id="new-year" placeholder="Year" required />
+        <button type="submit">Add New Album</button>
+    </form>
+
+    <table id="albums-table">
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        let apiURL = 'http://localhost:3000/';
+        // let apiURL = 'https://lab-5-o4a4.onrender.com/';
+
+        async function getAlbums() {
+            try {
+                const response = await axios.get(`${apiURL}api/albums`);
+                const data = response.data;
+
+                const table = document.getElementById('albums-table');
+                table.innerHTML = `
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Year</th>
+                        <th>Actions</th>
+                    </tr>
+                `;
+                data.forEach(album => {
+                    const row = table.insertRow();
+                    row.insertCell(0).innerText = album._id;
+                    row.insertCell(1).innerHTML = `<input type="text" value="${album.title}" class="edit-title" />`;
+                    row.insertCell(2).innerHTML = `<input type="text" value="${album.artist}" class="edit-artist" />`;
+                    row.insertCell(3).innerHTML = `<input type="number" value="${album.year}" class="edit-year" />`;
+
+                    const actionsCell = row.insertCell(4);
+
+                    // Update button
+                    const updateButton = document.createElement('button');
+                    updateButton.innerText = 'Update';
+                    updateButton.onclick = () => updateAlbum(album._id, row);
+                    actionsCell.appendChild(updateButton);
+
+                    // Delete button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerText = 'Delete';
+                    deleteButton.onclick = () => deleteAlbum(album._id);
+                    actionsCell.appendChild(deleteButton);
+
+                    // Details button
+                    const detailsButton = document.createElement('button');
+                    detailsButton.innerText = 'Details';
+                    detailsButton.onclick = () => alert(JSON.stringify(album, null, 2));
+                    actionsCell.appendChild(detailsButton);
+                });
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+
+        async function updateAlbum(id, row) {
+            const title = row.querySelector('.edit-title').value;
+            const artist = row.querySelector('.edit-artist').value;
+            const year = row.querySelector('.edit-year').value;
+
+            try {
+                const response = await axios.put(`${apiURL}api/albums/${id}`, {
+                    title, artist, year
+                });
+                getAlbums();
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+
+        // Delete album  
+        async function deleteAlbum(id) {
+            try {
+                const response = await axios.delete(`${apiURL}api/albums/${id}`);
+                getAlbums();
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+
+        // Create a new album  
+        const newAlbumForm = document.getElementById('new-album-form');
+        newAlbumForm.onsubmit = async function (e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            const title = document.getElementById('new-title').value;
+            const artist = document.getElementById('new-artist').value;
+            const year = document.getElementById('new-year').value;
+
+            try {
+                const response = await axios.post(`${apiURL}api/albums`, {
+                    title, artist, year
+                });
+                newAlbumForm.reset(); // Clear the form fields
+                getAlbums(); // Refresh the table
+            } catch (error) {
+                console.log(error);
+
+            }
+        };
+
+        // Load albums on page load
+        getAlbums();
+    </script>
+</body>
+
+</html>
+
+
+<!-- 
+tr => Table row
+td => Table data
+th => Table header
+boarder="1" => Add border to the table
+-->

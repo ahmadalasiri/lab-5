@@ -1,9 +1,25 @@
+require("dotenv").config();
 const express = require("express");
-const router = express.Router();
-const Album = require("../models/Album");
+const mongoose = require("mongoose");
+const path = require("path");
+const Album = require("./Album");
+
+const connectDB = async () => {
+  await mongoose.connect(process.env.MONGO_URI);
+};
+
+connectDB().then(() => {
+  console.log("Connected to MongoDB");
+});
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
 // Get all albums
-router.get("/albums", async (req, res) => {
+app.get("/api/albums", async (req, res) => {
   try {
     const albums = await Album.find();
     res.json(albums);
@@ -13,7 +29,7 @@ router.get("/albums", async (req, res) => {
 });
 
 // Get album by title
-router.get("/albums/:title", async (req, res) => {
+app.get("/api/albums/:title", async (req, res) => {
   try {
     const album = await Album.find({ title: req.params.title });
     if (album.length === 0)
@@ -25,7 +41,7 @@ router.get("/albums/:title", async (req, res) => {
 });
 
 // Create a new album
-router.post("/albums", async (req, res) => {
+app.post("/api/albums", async (req, res) => {
   const { title, artist, year } = req.body;
 
   try {
@@ -38,7 +54,7 @@ router.post("/albums", async (req, res) => {
 });
 
 // Update an album by ID
-router.put("/albums/:id", async (req, res) => {
+app.put("/api/albums/:id", async (req, res) => {
   try {
     const updatedAlbum = await Album.findByIdAndUpdate(
       req.params.id,
@@ -54,7 +70,7 @@ router.put("/albums/:id", async (req, res) => {
 });
 
 // Delete an album by ID
-router.delete("/albums/:id", async (req, res) => {
+app.delete("/api/albums/:id", async (req, res) => {
   try {
     const album = await Album.findById(req.params.id);
     if (!album) return res.status(404).json({ message: "Album not found" });
@@ -66,4 +82,19 @@ router.delete("/albums/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+app.get("/api/", (req, res) => {
+  console.log("__dirname", __dirname);
+  console.log("path", path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is up and running on http://localhost:${PORT}`);
+});
+
+// CRUD operations [Create, Read, Update, Delete]
+
+// Create - POST
+// Read - GET
+// Update - PUT
+// Delete - DELETE
