@@ -34,7 +34,7 @@ app.get("/api/albums/:title", async (req, res) => {
     const album = await Album.find({ title: req.params.title });
     if (album.length === 0)
       return res.status(404).json({ message: "Album not found" });
-    res.json(album);
+    res.status(200).json(album);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -45,8 +45,12 @@ app.post("/api/albums", async (req, res) => {
   const { title, artist, year } = req.body;
 
   try {
-    const album = new Album({ title, artist, year });
-    const newAlbum = await album.save();
+    const newAlbum = await Album.create({
+      title,
+      artist,
+      year,
+    });
+
     res.status(201).json(newAlbum);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -63,7 +67,7 @@ app.put("/api/albums/:id", async (req, res) => {
     );
     if (!updatedAlbum)
       return res.status(404).json({ message: "Album not found" });
-    res.json(updatedAlbum);
+    res.status(200).json(updatedAlbum);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -76,15 +80,13 @@ app.delete("/api/albums/:id", async (req, res) => {
     if (!album) return res.status(404).json({ message: "Album not found" });
 
     await Album.findByIdAndDelete(req.params.id);
-    res.json({ message: "Album deleted" });
+    res.status(200).json({ message: "Album deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
 app.get("/api/", (req, res) => {
-  console.log("__dirname", __dirname);
-  console.log("path", path.join(__dirname, "public", "index.html"));
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 

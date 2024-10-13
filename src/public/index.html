@@ -30,21 +30,22 @@
                 const data = response.data;
 
                 const table = document.getElementById('albums-table');
+
                 table.innerHTML = `
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
                         <th>Artist</th>
                         <th>Year</th>
-                        <th>Actions</th>
+                        <th>Actions</th> 
                     </tr>
                 `;
                 data.forEach(album => {
                     const row = table.insertRow();
                     row.insertCell(0).innerText = album._id;
-                    row.insertCell(1).innerHTML = `<input type="text" value="${album.title}" class="edit-title" />`;
-                    row.insertCell(2).innerHTML = `<input type="text" value="${album.artist}" class="edit-artist" />`;
-                    row.insertCell(3).innerHTML = `<input type="number" value="${album.year}" class="edit-year" />`;
+                    row.insertCell(1).innerHTML = `<input type="text" value="${album.title}" class="update-title" />`;
+                    row.insertCell(2).innerHTML = `<input type="text" value="${album.artist}" class="update-artist" />`;
+                    row.insertCell(3).innerHTML = `<input type="number" value="${album.year}" class="update-year" />`;
 
                     const actionsCell = row.insertCell(4);
 
@@ -68,14 +69,13 @@
                 });
             } catch (error) {
                 console.log(error);
-
             }
         }
 
         async function updateAlbum(id, row) {
-            const title = row.querySelector('.edit-title').value;
-            const artist = row.querySelector('.edit-artist').value;
-            const year = row.querySelector('.edit-year').value;
+            const title = row.querySelector('.update-title').value;
+            const artist = row.querySelector('.update-artist').value;
+            const year = row.querySelector('.update-year').value;
 
             try {
                 const response = await axios.put(`${apiURL}api/albums/${id}`, {
@@ -130,7 +130,7 @@
 
 <!-- 
 tr => Table row
-td => Table data
 th => Table header
+td => Table data
 boarder="1" => Add border to the table
 -->
