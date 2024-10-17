@@ -112,7 +112,6 @@
                 const response = await axios.post(`${apiURL}api/albums`, {
                     title, artist, year
                 });
-                newAlbumForm.reset(); // Clear the form fields
                 getAlbums(); // Refresh the table
             } catch (error) {
                 console.log(error);
