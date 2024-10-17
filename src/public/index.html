@@ -21,8 +21,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        // let apiURL = 'http://localhost:3000/';
-        let apiURL = 'https://lab-5-1.onrender.com/';
+        let apiURL = 'http://localhost:3000/';
+        // let apiURL = 'https://lab-5-1.onrender.com/';
 
         async function getAlbums() {
             try {
@@ -102,7 +102,7 @@
         // Create a new album  
         const newAlbumForm = document.getElementById('new-album-form');
         newAlbumForm.onsubmit = async function (e) {
-            e.preventDefault(); // Prevent form from submitting normally
+            e.preventDefault(); // Prevent the default form submit
 
             const title = document.getElementById('new-title').value;
             const artist = document.getElementById('new-artist').value;
@@ -120,17 +120,8 @@
             }
         };
 
-        // Load albums on page load
         getAlbums();
     </script>
 </body>
 
 </html>
-
-
-<!-- 
-tr => Table row
-th => Table header
-td => Table data
-boarder="1" => Add border to the table
--->
